@@ -1,8 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:ieee/Screens/user_screen.dart';
-import 'package:ieee/Widgets/info_list.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -143,10 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState?.save();
-                        InfoList().userInfo["college"] = selectedCollege;
-                        InfoList().userInfo["major"] = selectedMajor;
-                        InfoList().userInfo["year"] = selectedSchoolYear;
-
                         await http
                             .post(recommendUrl,
                                 body: json.encode({
@@ -162,6 +158,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           major: selectedMajor,
                                           college: selectedCollege,
                                         ))));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserScreen(
+                                      year: selectedSchoolYear,
+                                      major: selectedMajor,
+                                      college: selectedCollege,
+                                    )));
                       }
                     },
                     child: const Text(

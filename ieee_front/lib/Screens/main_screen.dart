@@ -4,9 +4,21 @@ import 'package:ieee/Widgets/info_list.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({
     Key? key,
-    required this.recommendBookList,
+    required this.year,
+    required this.college,
+    required this.major,
+    required this.recommend,
+    required this.monthly,
+    required this.selectedYear,
+    required this.selectedMonth,
   }) : super(key: key);
-  final List<dynamic> recommendBookList;
+  final dynamic year;
+  final dynamic college;
+  final dynamic major;
+  final dynamic selectedYear;
+  final dynamic selectedMonth;
+  final List<dynamic> recommend;
+  final List<dynamic> monthly;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -19,7 +31,6 @@ class _MainScreenState extends State<MainScreen> {
     "2019",
     "2020",
     "2021",
-    "2022",
   ];
   final List<String> _months = [
     "01",
@@ -35,27 +46,40 @@ class _MainScreenState extends State<MainScreen> {
     "11",
     "12",
   ];
-  String _selectedYear = "2018";
-  String _selectedMonth = "01";
+  late String _selectedYear = widget.selectedYear;
+  late String _selectedMonth = widget.selectedMonth;
   int _selectedIndex = 0;
 
   final recommendUrl = Uri.parse('http://10.0.2.2:5000/recommend');
   final monthlyUrl = Uri.parse('http://10.0.2.2:5000/monthly');
   final yearlyUrl = Uri.parse('http://10.0.2.2:5000/yearly');
 
-  late dynamic year;
-  late dynamic college;
-  late dynamic major;
-  late List<dynamic> recommendList = widget.recommendBookList;
-  late List<dynamic> monthlyList;
+  late List<dynamic> recommendList = widget.recommend;
+  late List<dynamic> monthlyList = widget.monthly;
+  late List<dynamic> yearlyList = InfoList().yearly2017;
+  late dynamic year = widget.year;
+  late dynamic college = widget.college;
+  late dynamic major = widget.major;
 
   @override
   void initState() {
     super.initState();
-    if (InfoList().userInfo.isNotEmpty) {
-      year = InfoList().userInfo["year"];
-      college = InfoList().userInfo["college"];
-      major = InfoList().userInfo["major"];
+    switch (_selectedYear) {
+      case "2017":
+        yearlyList = InfoList().yearly2017;
+        break;
+      case "2018":
+        yearlyList = InfoList().yearly2018;
+        break;
+      case "2019":
+        yearlyList = InfoList().yearly2019;
+        break;
+      case "2020":
+        yearlyList = InfoList().yearly2020;
+        break;
+      case "2021":
+        yearlyList = InfoList().yearly2021;
+        break;
     }
   }
 
@@ -314,7 +338,7 @@ class _MainScreenState extends State<MainScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Row(
                                 children: const [
@@ -334,90 +358,15 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                 ],
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: 60,
-                                    child: DropdownButton(
-                                        icon: const Icon(Icons.arrow_downward),
-                                        isDense: true,
-                                        iconSize: 20,
-                                        elevation: 16,
-                                        value: _selectedYear,
-                                        underline: Container(
-                                          height: 2,
-                                          color: Colors.cyan,
-                                        ),
-                                        isExpanded: true,
-                                        items: _years.map((String y) {
-                                          return DropdownMenuItem(
-                                            child: Text(
-                                              y,
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            value: y,
-                                          );
-                                        }).toList(),
-                                        onChanged: (dynamic value) {
-                                          setState(() {
-                                            _selectedYear = value;
-                                          });
-                                        }),
-                                  ),
-                                  SizedBox(
-                                    width: 40,
-                                    child: DropdownButton(
-                                        icon: const Icon(Icons.arrow_downward),
-                                        isDense: true,
-                                        iconSize: 20,
-                                        elevation: 16,
-                                        value: _selectedMonth,
-                                        underline: Container(
-                                          height: 2,
-                                          color: Colors.cyan,
-                                        ),
-                                        isExpanded: true,
-                                        items: _months.map((String m) {
-                                          return DropdownMenuItem(
-                                            child: Text(
-                                              m,
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            value: m,
-                                          );
-                                        }).toList(),
-                                        onChanged: (dynamic value) {
-                                          setState(() {
-                                            _selectedMonth = value;
-                                          });
-                                        }),
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  OutlinedButton.icon(
-                                    onPressed: () {},
-                                    style: OutlinedButton.styleFrom(
-                                        primary: Colors.cyan),
-                                    icon: const Icon(
-                                      Icons.search,
-                                      size: 12,
-                                    ),
-                                    label: const Text(
-                                      "검색",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                "$_selectedYear년",
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "$_selectedMonth월",
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -429,7 +378,7 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           ListView.builder(
                               shrinkWrap: true,
-                              itemCount: recommendList.length,
+                              itemCount: monthlyList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Column(
                                   children: [
@@ -439,7 +388,7 @@ class _MainScreenState extends State<MainScreen> {
                                           ListTile(
                                             title: Padding(
                                               child: Text(
-                                                recommendList[index]["서명"],
+                                                monthlyList[index]["서명"],
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
@@ -452,7 +401,7 @@ class _MainScreenState extends State<MainScreen> {
                                             ),
                                             subtitle: Padding(
                                               child: Text(
-                                                recommendList[index]["저자명"],
+                                                monthlyList[index]["저자명"],
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
@@ -490,7 +439,7 @@ class _MainScreenState extends State<MainScreen> {
                                                   CrossAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  recommendList[index]["소장위치"],
+                                                  monthlyList[index]["소장위치"],
                                                   style: const TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -518,7 +467,7 @@ class _MainScreenState extends State<MainScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Row(
                                 children: const [
@@ -538,60 +487,10 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                 ],
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: 80,
-                                    child: DropdownButton(
-                                        icon: const Icon(Icons.arrow_downward),
-                                        isDense: true,
-                                        iconSize: 20,
-                                        elevation: 16,
-                                        value: _selectedYear,
-                                        underline: Container(
-                                          height: 2,
-                                          color: Colors.cyan,
-                                        ),
-                                        isExpanded: true,
-                                        items: _years.map((String y) {
-                                          return DropdownMenuItem(
-                                            child: Text(
-                                              y,
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            value: y,
-                                          );
-                                        }).toList(),
-                                        onChanged: (dynamic value) {
-                                          setState(() {
-                                            _selectedYear = value;
-                                          });
-                                        }),
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  OutlinedButton.icon(
-                                    onPressed: () {},
-                                    style: OutlinedButton.styleFrom(
-                                        primary: Colors.cyan),
-                                    icon: const Icon(
-                                      Icons.search,
-                                      size: 12,
-                                    ),
-                                    label: const Text(
-                                      "검색",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                "$_selectedYear년",
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -600,7 +499,7 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           ListView.builder(
                               shrinkWrap: true,
-                              itemCount: recommendList.length,
+                              itemCount: yearlyList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Column(
                                   children: [
@@ -610,7 +509,7 @@ class _MainScreenState extends State<MainScreen> {
                                           ListTile(
                                             title: Padding(
                                               child: Text(
-                                                recommendList[index]["서명"],
+                                                yearlyList[index]["서명"],
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
@@ -623,7 +522,7 @@ class _MainScreenState extends State<MainScreen> {
                                             ),
                                             subtitle: Padding(
                                               child: Text(
-                                                recommendList[index]["저자명"],
+                                                yearlyList[index]["저자명"],
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight:
@@ -661,7 +560,7 @@ class _MainScreenState extends State<MainScreen> {
                                                   CrossAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  recommendList[index]["소장위치"],
+                                                  yearlyList[index]["소장위치"],
                                                   style: const TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:

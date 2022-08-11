@@ -47,10 +47,9 @@ def monthlyRoute() :
       # rating 수치는 대출수이며, 뒤에 유클리디언 유사도에서 사용함
       borrowed_book['rating'] = 1
       borrowed_book.drop(columns=['대출연장구분', '입학년도', '소속', '상위소속'], inplace=True)
-      # year = request_data["yearly"]
-      # month = request_data["monthly"]
-      year = "2018"
-      month = "02"
+      year = request_data["yearly"]
+      month = request_data["monthly"]
+      
       borrowed_book['대출일시'] = (borrowed_book.대출일시.str.split('/').str[0] == year) & (borrowed_book.대출일시.str.split('/').str[1] == month)
       # print(borrowed_book.head())
       false_year = borrowed_book[(borrowed_book['대출일시'] == False)].index
@@ -71,7 +70,6 @@ def monthlyRoute() :
       # print(borrowed_book.info())
       ranking_book.reset_index(inplace=True)
       ranking_book.drop(columns='index', inplace=True)
-      print(ranking_book.head(10))
       info_book_df = pd.DataFrame()
       
       
